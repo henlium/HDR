@@ -9,8 +9,8 @@ class EmUnit():
 
 class Robertson():
     def __init__(self):
-        self.MAXITERATOR = 8
-        self.THRESHOLD = 0.0001
+        self.MAXITERATOR = 15
+        self.THRESHOLD = 0.1
         self.curve = np.zeros([3, 256], dtype='float32')
 
         self.weight = np.zeros(256, dtype='float32')
@@ -23,12 +23,25 @@ class Robertson():
             value = scale * math.exp(-value * value) + shift
             self.weight[i] = value
 
-        
+    def processwithcurve(self, images, ExposureTimes, filenames):
+        height, width, null = images[0].shape
+        for filename in filenames:
+            filename = "curve" + str(i) + ".txt"
+            curve[i] = np.loadtxt(filename)
+
+        HDRPic = np.zeros([height, width, 3], dtype='float32')
+        HDRPic[:, :, 0] = self.calcRadius(images, ExposureTimes, self.curve[0], 0)
+        HDRPic[:, :, 1] = self.calcRadius(images, ExposureTimes, self.curve[1], 1)
+        HDRPic[:, :, 2] = self.calcRadius(images, ExposureTimes, self.curve[2], 2)
+        return HDRPic
+    
     def process(self, images, ExposureTimes):
         height, width, null = images[0].shape
-        self.curve[0, :] = self.findCurve(0, images, ExposureTimes)
-        self.curve[1, :] = self.findCurve(1, images, ExposureTimes)
-        self.curve[2, :] = self.findCurve(2, images, ExposureTimes)
+        for i in range(3):
+            self.curve[i, :] = self.findCurve(i, images, ExposureTimes)
+            filename = "curve" + str(i) + ".txt"
+            np.savetxt(filename, self.curve[i])
+
         HDRPic = np.zeros([height, width, 3], dtype='float32')
         HDRPic[:, :, 0] = self.calcRadius(images, ExposureTimes, self.curve[0], 0)
         HDRPic[:, :, 1] = self.calcRadius(images, ExposureTimes, self.curve[1], 1)
@@ -69,7 +82,8 @@ class Robertson():
 
         calcTimes = 0
         lastSum = 0
-        while calcTimes < self.MAXITERATOR:
+        while calcTimes <= self.MAXITERATOR:
+            print(str(calcTimes) + "/" + str(self.MAXITERATOR) + " times")
             #calc response function by radius map
             gFunc = np.zeros(256, dtype='float32') 
             for i in range(256):
@@ -88,12 +102,14 @@ class Robertson():
                 for i in range(height):
                     for j in range(width):
                         totalSum += self.weight[images[n][i, j, channel]] * (gFunc[images[n][i, j, channel]] - Ei[i,j] * ExposureTimes[n])
+            print("lastSum: " + str(lastSum) + ", totalSum: " + str(totalSum))
             if calcTimes == 0:
                 lastSum = totalSum
             else:
                 if abs(lastSum - totalSum) < self.THRESHOLD:
                     print("End due to converge," + str(calcTimes) + " times.")
                     return gFunc
+            lastSum = totalSum
             calcTimes += 1
 
         print("End due to run more than " + str(self.MAXITERATOR) + " times.")
