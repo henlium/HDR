@@ -5,8 +5,10 @@ import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 import numpy as np
 
-def gray(img):
-    return np.array([[(54*yi[0]+183*yi[1]+19*yi[2])/256 for yi in xi] for xi in img], dtype='uint8')
+def gray(img, opt='cv'):
+    if opt == 'mpl':
+        return np.array([[(54*yi[0]+183*yi[1]+19*yi[2])/256 for yi in xi] for xi in img], dtype='uint8')
+    return np.array([[(54*yi[2]+183*yi[1]+19*yi[0])/256 for yi in xi] for xi in img], dtype='uint8')
 
 # Shrink an 1-channel image by 2
 def shrinkBy2(img):
@@ -19,23 +21,50 @@ def bitmap(img):
     med = int(np.median(img))
     thresBitmap = np.array([[True if yi > med else False for yi in xi] for xi in img], dtype='bool')
     x, y = img.shape
-    excluBitmap = np.ones((x, y), dtype='bool')
+    excluBitmap = np.full((x, y), True, dtype='bool')
     for i in range(x):
         for j in range(y):
             if abs(img[i][j] - med) < 5:
                 excluBitmap[i][j] = False
     return (thresBitmap, excluBitmap)
 
+def bitmapShift(bm, x, y):
+    shifted = np.full(bm.shape, False, dtype='bool')
+    if x > 0:
+        shifted[x:] = bm[:-x]
+    elif x < 0:
+        shifted[:x] = bm[-x:]
+    else:
+        shifted = bm
+    if y > 0:
+        shifted = [np.append([False] * y, row[:-y]) for row in shifted]
+    elif y < 0:
+        shifted = [np.append(row[-y:], [False] * -y) for row in shifted]
+    return shifted
+
+def imgShift(im, x, y):
+    shifted = np.full(im.shape, 0, dtype='uint8')
+    if x > 0:
+        shifted[x:] = im[:-x]
+    elif x < 0:
+        shifted[:x] = im[-x:]
+    else:
+        shifted = im
+    if y > 0:
+        shifted = [np.append([False] * y, row[:-y]) for row in shifted]
+    elif y < 0:
+        shifted = [np.append(row[-y:], [False] * -y) for row in shifted]
+    return shifted
+
 def getExpShift(img0, img1, shiftBits):
     if shiftBits > 0:
         smlImg0 = shrinkBy2(img0)
         smlImg1 = shrinkBy2(img1)
         curShiftBits = getExpShift(smlImg0, smlImg1, shiftBits-1)
-        print(curShiftBits)
         curShiftBits[0] *= 2
         curShiftBits[1] *= 2
     else:
-        curShiftBits = (0, 0)
+        curShiftBits = [0, 0]
     tb0, eb0 = bitmap(img0)
     tb1, eb1 = bitmap(img1)
     minErr = img0.shape[0] * img0.shape[1]
@@ -43,36 +72,27 @@ def getExpShift(img0, img1, shiftBits):
         for j in range(-1, 2):
             xs = curShiftBits[0] + i
             ys = curShiftBits[1] + j
-            shifted_tb1 = np.full(tb1.shape, False, dtype='bool')
-            shifted_eb1 = np.full(eb1.shape, False, dtype='bool')
-            if xs > 0:
-                shifted_tb1[xs:] = tb1[:-xs]
-                shifted_eb1[xs:] = eb1[:-xs]
-            elif xs < 0:
-                shifted_tb1[:xs] = tb1[-xs:]
-                shifted_eb1[:xs] = eb1[-xs:]
-            else:
-                shifted_tb1 = tb1
-                shifted_eb1 = eb1
-            if ys > 0:
-                shifted_tb1 = [np.append([False] * ys, row[:-ys]) for row in shifted_tb1]
-                shifted_eb1 = [np.append([False] * ys, row[:-ys]) for row in shifted_eb1]
-            elif ys < 0:
-                shifted_tb1 = [np.append(row[-ys:], [False] * -ys) for row in shifted_tb1]
-                shifted_eb1 = [np.append(row[-ys:], [False] * -ys) for row in shifted_eb1]
+            shifted_tb1 = bitmapShift(tb1, xs, ys)
+            shifted_eb1 = bitmapShift(eb1, xs, ys)
             diff_b = np.logical_xor(tb0, shifted_tb1)
-            diff_b = np.logical_and(eb0, diff_b)
-            diff_b = np.logical_and(shifted_eb1, diff_b)
-            err = np.sum(shifted_eb1)
+            diff_b = np.logical_and(diff_b, eb0)
+            diff_b = np.logical_and(diff_b, shifted_eb1)
+            err = np.sum(diff_b)
             if err < minErr:
                 ret = [xs, ys]
                 minErr = err
-            print(xs, ys, 'err', err)
     return ret
 
-def align(img0_name, img1_name, level):
-    img0 = mpimg.imread(img0_name)
-    img1 = mpimg.imread(img1_name)
-    g0 = gray(img0)
-    g1 = gray(img1)
+def align(img0, img1, level, opt='cv'):
+    g0 = gray(img0, opt)
+    g1 = gray(img1, opt)
     return getExpShift(g0, g1, level)
+
+def process(imgs_src, imgs_dest, level, opt='cv'):
+    if len(imgs_src) < 2:
+        return
+    else:
+        imgs_dest = [imgs_src[0]]
+        for i in range(1, len(imgs_src)):
+            x, y = align(imgs_src[0], imgs_src[1], level, opt)
+            imgs_dest.append(imgShift(imgs_src[i], x, y))
