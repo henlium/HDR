@@ -88,11 +88,13 @@ def align(img0, img1, level, opt='cv'):
     g1 = gray(img1, opt)
     return getExpShift(g0, g1, level)
 
-def process(imgs_src, imgs_dest, level, opt='cv'):
+def process(imgs_src, level, opt='cv'):
+    ret = []
     if len(imgs_src) < 2:
-        return
+        return ret
     else:
-        imgs_dest = [imgs_src[0]]
+        ret = [imgs_src[0]]
         for i in range(1, len(imgs_src)):
             x, y = align(imgs_src[0], imgs_src[1], level, opt)
-            imgs_dest.append(imgShift(imgs_src[i], x, y))
+            ret.append(imgShift(imgs_src[i], x, y))
+        return ret
