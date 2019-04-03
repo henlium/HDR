@@ -9,8 +9,8 @@ class EmUnit():
 
 class Robertson():
     def __init__(self):
-        self.MAXITERATOR = 15
-        self.THRESHOLD = 0.1
+        self.MAXITERATOR = 13
+        self.THRESHOLD = 2
         self.curve = np.zeros([3, 256], dtype='float32')
 
         self.weight = np.zeros(256, dtype='float32')
@@ -25,14 +25,19 @@ class Robertson():
 
     def processwithcurve(self, images, ExposureTimes, filenames):
         height, width, null = images[0].shape
+        i = 0
         for filename in filenames:
-            filename = "curve" + str(i) + ".txt"
-            curve[i] = np.loadtxt(filename)
+            self.curve[i] = np.loadtxt(filename)
+            i += 1
 
         HDRPic = np.zeros([height, width, 3], dtype='float32')
+        print("Start First Channel")
         HDRPic[:, :, 0] = self.calcRadius(images, ExposureTimes, self.curve[0], 0)
+        print("Start Second Channel")
         HDRPic[:, :, 1] = self.calcRadius(images, ExposureTimes, self.curve[1], 1)
+        print("Start Third Channel")
         HDRPic[:, :, 2] = self.calcRadius(images, ExposureTimes, self.curve[2], 2)
+        print("Done!!")
         return HDRPic
     
     def process(self, images, ExposureTimes):
@@ -43,9 +48,13 @@ class Robertson():
             np.savetxt(filename, self.curve[i])
 
         HDRPic = np.zeros([height, width, 3], dtype='float32')
+        print("Start First Channel")
         HDRPic[:, :, 0] = self.calcRadius(images, ExposureTimes, self.curve[0], 0)
+        print("Start Second Channel")
         HDRPic[:, :, 1] = self.calcRadius(images, ExposureTimes, self.curve[1], 1)
+        print("Start Third Channel")
         HDRPic[:, :, 2] = self.calcRadius(images, ExposureTimes, self.curve[2], 2)
+        print("Done!!")
         return HDRPic
 
     def calcRadius(self, images, ExposureTimes, gFunc, channel):
