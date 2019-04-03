@@ -64,7 +64,7 @@ class Robertson():
             for j in range(width):
                 u, b = 0.0, 0.0 
                 for n in range(len(images)):
-                    z = images[n][i, j, channel]
+                    z = images[n][i][j][channel]
                     u += self.weight[z] * gFunc[z] * ExposureTimes[n]
                     b += self.weight[z] * ExposureTimes[n] * ExposureTimes[n]
                 Ei[i,j] = u/b
@@ -78,7 +78,7 @@ class Robertson():
         for n in range(len(images)):
             for i in range(height):
                 for j in range(width): 
-                    m = images[n][i, j, channel] 
+                    m = images[n][i][j][channel] 
                     Em[m].append(EmUnit(n, i, j))
 
         #assume response function is linear
@@ -110,7 +110,7 @@ class Robertson():
             for n in range(len(images)):
                 for i in range(height):
                     for j in range(width):
-                        totalSum += self.weight[images[n][i, j, channel]] * (gFunc[images[n][i, j, channel]] - Ei[i,j] * ExposureTimes[n])
+                        totalSum += self.weight[images[n][i][j][channel]] * (gFunc[images[n][i][j][channel]] - Ei[i,j] * ExposureTimes[n])
             print("lastSum: " + str(lastSum) + ", totalSum: " + str(totalSum))
             if calcTimes == 0:
                 lastSum = totalSum
