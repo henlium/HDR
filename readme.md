@@ -10,7 +10,7 @@
 ## HDR
 
 HDR 的部分我們用的是 Robertson 那篇的做法，因為這個算法需要算非常久(至少 8~10 次)才會開始 coverage，而遇到大圖的時候它跑一次就會需要很長的時間(大概一個小時)，如果要對三個 channel 都跑到 coverage 會花上數天。所以我們把原本拍的照片長跟寬都先縮小到 1/4，讓他對這張較小的圖片找出它的 G function(response function 的反函數)，再用這個 function 跑原本大圖來算出原圖的 Radius Map。G Function 的折線圖如下
-![img](mdimg/curveall.png)![img](mdimg/curveleft.png)![img](mdimg/curveright.png)
+![curveAll](mdimg/curveall.png)![curveLeft](mdimg/curveleft.png)![curveRight](mdimg/curveright.png)
 可以發現在左右兩端的值是快速下降/上升的
 
 ## Tonemapping
