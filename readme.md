@@ -25,12 +25,13 @@ HDR 的部分我們用的是 Robertson 那篇的做法，因為這個算法需�
 
 ### How to use
 
-- <code>python3 main.py -h</code> for help
-- <code>-a</code> for alignment, <code>-g</code> to import known G function
-- <code>-o</code> to specify output file's name, default is hdrimage.hdr
-- when it use without <code>-g</code>, it will output G function to curve0.txt, curve1.txt, curve2.txt
-- ex: <code>python3 main.py -a 2 -g img/01</code> to use alignment with known G function, and images are in <code>img/01</code>
-- images filename must be <code>a:b.jpg</code> to represent exposure time is a/b
+- `python3 main.py -h` for help
+- `-a` for alignment, `-g` to import known G function
+- `-o` to specify output file's name, default is hdrimage.hdr
+- when it use without `-g`, it will output G function to curve0.txt, curve1.txt, curve2.txt
+- ex: `python3 main.py -a 2 -g img/01` to use alignment with known G function, and images are in `img/01`
+- images filename must be `a:b.jpg` to represent exposure time is a/b
+- `align.py` contains a function `process` for aligning a list of images, its parameters are as follow: a list of images, how many level of image pyramid, option of 'cv' or 'mpl' (due to color channel order)
 
 ### Require modules
 

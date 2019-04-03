@@ -33,7 +33,7 @@ if __name__ == '__main__':
                         help='if you have g function(inverse of reponse function), use this to run Robert HDR with it',
                         action="store_true")
     parser.add_argument('-a', '--align', 
-                        help='Do alignment or not, it will do level+1 times of shift',
+                        help='Do alignment or not, level will increase the range of alignment(level of image pyramid)',
                         type=int, dest='level', default=-1)
     parser.add_argument('-c0', '--curve0', 
                         help='gfunction file for channel 0, only will be used when -g',
