@@ -41,7 +41,7 @@ def bitmapShift(bm, x, y):
     return shifted
 
 def imgShift(im, x, y):
-    shifted = np.full(im.shape, 0, dtype='uint8')
+    shifted = np.array(im)
     if x > 0:
         shifted[x:] = im[:-x]
     elif x < 0:
