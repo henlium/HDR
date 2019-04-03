@@ -20,6 +20,7 @@ HDR 的部分我們用的是 Robertson 那篇的做法，因為這個算法需�
 ## Tonemapping
 
 這個部分我們使用的是外部程式來跑 Tone Mapping，結果如下
+![result](05RobwithCurve-1.png)
 
 ## Program
 
@@ -29,14 +30,14 @@ HDR 的部分我們用的是 Robertson 那篇的做法，因為這個算法需�
 - `-a` for alignment, `-g` to import known G function
 - `-o` to specify output file's name, default is hdrimage.hdr
 - when it use without `-g`, it will output G function to curve0.txt, curve1.txt, curve2.txt
-- ex: `python3 main.py -a 2 -g img/01` to use alignment with known G function, and images are in `img/01`
+- ex: `python3 main.py -g img/05` to use alignment with known G function, and images are in `img/05`
 - images filename must be `a:b.jpg` to represent exposure time is a/b
 - `align.py` contains a function `process` for aligning a list of images, its parameters are as follow: a list of images, how many level of image pyramid, option of 'cv' or 'mpl' (due to color channel order)
 
 ### Require modules
 
-- opencv from image IO
-- numpy for math calculation
+- opencv for image IO
+- numpy for calculation
 - argparse for arguments
 
 ## Reference

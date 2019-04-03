@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-import matplotlib.pyplot as plt
-import matplotlib.image as mpimg
 import numpy as np
 
 def gray(img, opt='cv'):
@@ -89,11 +87,10 @@ def align(img0, img1, level, opt='cv'):
     return getExpShift(g0, g1, level)
 
 def process(imgs_src, level, opt='cv'):
-    ret = []
+    ret = [imgs_src[0]]
     if len(imgs_src) < 2:
         return ret
     else:
-        ret = [imgs_src[0]]
         for i in range(1, len(imgs_src)):
             x, y = align(imgs_src[0], imgs_src[1], level, opt)
             ret.append(imgShift(imgs_src[i], x, y))
