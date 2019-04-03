@@ -49,13 +49,13 @@ if __name__ == '__main__':
                         type=str, default='hdrimage.hdr')
 
     args = parser.parse_args()
-    images, ExposureTimes = readFolder(arg.folder)
-    if(arg.level >= 0):
-        align.process(images, arg.level)
+    images, ExposureTimes = readFolder(args.folder)
+    if(args.level >= 0):
+        align.process(images, args.level)
     myhdr = Robertson()
-    if(arg.curve):
-        curveFiles = [arg.curve0, arg.curve1, arg.curve2]
+    if(args.curve):
+        curveFiles = [args.curve0, args.curve1, args.curve2]
         myhdrPic = myhdr.processwithcurve(images, ExposureTimes, curveFiles)
     else:
         myhdrPic = myhdr.process(images, ExposureTimes)
-    cv.imwrite(arg.output, myhdrPic)
+    cv.imwrite(args.output, myhdrPic)
