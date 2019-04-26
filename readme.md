@@ -11,6 +11,12 @@
 
 基於除錯的難度以及和其他部分銜接的方便性，我們轉用了 Python，算法參照原 paper 的作法，程式架構也與論文裡的大致類似，轉灰階的公式也參照了論文所提的作法。
 
+可以從下面這兩張的例子看出來，因為採用切掉的地方補 0 的做法，所以在邊界外的區域會有多一塊的現象。
+![without alignment](05RobwithCurve-1.png)
+無 alignment
+![with alignment](mdimg/alignment.png)
+有 alignment
+
 ## HDR
 
 HDR 的部分我們用的是 Robertson 那篇的做法，因為這個算法需要算非常久(至少 8~10 次)才會開始 coverage，而遇到大圖的時候它跑一次就會需要很長的時間(大概一個小時)，如果要對三個 channel 都跑到 coverage 會花上數天。所以我們把原本拍的照片長跟寬都先縮小到 1/4，讓他對這張較小的圖片找出它的 G function(response function 的反函數)，再用這個 function 跑原本大圖來算出原圖的 Radius Map。G Function 的折線圖如下

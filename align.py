@@ -49,9 +49,9 @@ def imgShift(im, x, y):
     else:
         shifted = im
     if y > 0:
-        shifted = [np.concatenate([[0, 0, 0] * y, row[:-y]]) for row in shifted]
+        shifted = [np.concatenate([[[0, 0, 0]] * y, row[:-y]]) for row in shifted]
     elif y < 0:
-        shifted = [np.concatenate([row[-y:], [0, 0, 0] * -y]) for row in shifted]
+        shifted = [np.concatenate([row[-y:], [[0, 0, 0]] * -y]) for row in shifted]
     return shifted
 
 def getExpShift(img0, img1, shiftBits):
